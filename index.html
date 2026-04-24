@@ -1,0 +1,2983 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>frameslk — Timeless Photography</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       CSS CUSTOM PROPERTIES — DESIGN TOKENS
+    ============================================= */
+    :root {
+      --black: #0c0c0c;
+      --white: #ffffff;
+      --off-white: #f7f4f0;
+      --cream: #ede8e1;
+      --gold: #b8975a;
+      --gold-light: #d4b483;
+      --grey-dark: #2a2a2a;
+      --grey-mid: #6b6b6b;
+      --grey-light: #c4bdb5;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Jost', sans-serif;
+      --nav-h: 72px;
+      --transition: 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--white);
+      color: var(--black);
+      overflow-x: hidden;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      border: none;
+      background: none;
+      font-family: var(--sans);
+    }
+
+    ul {
+      list-style: none;
+    }
+
+
+
+    /* =============================================
+       NAVBAR
+    ============================================= */
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      padding: 0 5%;
+      z-index: 1000;
+      background: rgba(20, 20, 20, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: background var(--transition), box-shadow var(--transition);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    #navbar.scrolled {
+      background: rgba(12, 12, 12, 0.9);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-brand {
+      font-family: var(--serif);
+      font-size: 1.65rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--white);
+      text-transform: lowercase;
+    }
+
+    .nav-brand span {
+      color: var(--gold);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      margin-left: auto;
+      align-items: center;
+    }
+
+    .nav-link {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.75);
+      position: relative;
+      padding-bottom: 3px;
+      transition: color 0.3s;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--gold);
+      transition: width 0.35s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--white);
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    /* Hamburger */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      margin-left: auto;
+      padding: 4px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--white);
+      transition: var(--transition);
+    }
+
+    .nav-toggle.open span:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+
+    .nav-toggle.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .nav-toggle.open span:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 12, 12, 0.97);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+    }
+
+    .mobile-nav.open {
+      display: flex;
+    }
+
+    .mobile-nav .nav-link {
+      font-size: 1.6rem;
+      font-family: var(--serif);
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      text-transform: capitalize;
+      color: var(--white);
+    }
+
+    /* =============================================
+       PAGE SYSTEM
+    ============================================= */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* =============================================
+       SCROLL FADE-IN ANIMATIONS
+    ============================================= */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* =============================================
+       BUTTONS
+    ============================================= */
+    .btn-primary {
+      display: inline-block;
+      padding: 14px 38px;
+      background: var(--gold);
+      color: var(--white);
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .btn-primary:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      display: inline-block;
+      padding: 13px 36px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      color: var(--white);
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transition: border-color 0.3s, background 0.3s, transform 0.3s;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--gold);
+      background: rgba(184, 151, 90, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .btn-dark {
+      display: inline-block;
+      padding: 14px 38px;
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .btn-dark:hover {
+      background: var(--grey-dark);
+      transform: translateY(-2px);
+    }
+
+    /* =============================================
+       SECTION LABEL
+    ============================================= */
+    .section-label {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--black);
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .section-title-light {
+      color: var(--white);
+    }
+
+    .section-body {
+      font-size: 0.95rem;
+      font-weight: 300;
+      line-height: 1.85;
+      color: var(--grey-mid);
+      max-width: 560px;
+    }
+
+    /* =============================================
+       DECORATIVE LINE
+    ============================================= */
+    .deco-line {
+      display: block;
+      width: 48px;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+
+    /* =============================================
+       HOME — HERO
+    ============================================= */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 640px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1800&q=80');
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.08);
+      animation: heroZoom 8s ease forwards;
+    }
+
+    @keyframes heroZoom {
+      to {
+        transform: scale(1);
+      }
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom,
+          rgba(12, 12, 12, 0.55) 0%,
+          rgba(12, 12, 12, 0.4) 50%,
+          rgba(12, 12, 12, 0.7) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 0 5%;
+      animation: heroFade 1.2s ease 0.4s both;
+    }
+
+    @keyframes heroFade {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-eyebrow {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 1.8rem;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 7vw, 6.5rem);
+      font-weight: 300;
+      line-height: 1.08;
+      color: var(--white);
+      margin-bottom: 1.8rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .hero-sub {
+      font-size: 0.9rem;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.65);
+      margin-bottom: 3rem;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-scroll span {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, rgba(184, 151, 90, 0.8), transparent);
+      animation: scrollPulse 2s ease infinite;
+    }
+
+    @keyframes scrollPulse {
+
+      0%,
+      100% {
+        opacity: 0.4;
+        transform: scaleY(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scaleY(1.2);
+      }
+    }
+
+    /* =============================================
+       HOME — INTRO SPLIT
+    ============================================= */
+    #intro {
+      padding: 8rem 5%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .intro-img-wrap {
+      position: relative;
+    }
+
+    .intro-img-wrap img {
+      height: 580px;
+      object-fit: cover;
+    }
+
+    .intro-img-accent {
+      position: absolute;
+      bottom: -24px;
+      right: -24px;
+      width: 60%;
+      height: 60%;
+      border: 1px solid var(--gold);
+      z-index: -1;
+    }
+
+    .intro-years {
+      position: absolute;
+      top: 24px;
+      left: -24px;
+      background: var(--black);
+      color: var(--white);
+      padding: 1.5rem 1.8rem;
+      text-align: center;
+    }
+
+    .intro-years strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 2.8rem;
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .intro-years span {
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .intro-text {
+      padding: 1rem 0;
+    }
+
+    .intro-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .stat {
+      border-top: 1px solid var(--cream);
+      padding-top: 1rem;
+    }
+
+    .stat strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--black);
+      line-height: 1;
+    }
+
+    .stat span {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--grey-mid);
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* =============================================
+       HOME — PORTFOLIO PREVIEW
+    ============================================= */
+    #portfolio-preview {
+      background: var(--off-white);
+      padding: 8rem 5%;
+    }
+
+    .portfolio-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto 4rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 1.2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .portfolio-grid .item:nth-child(1) {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+
+    .portfolio-item {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portfolio-item img {
+      height: 340px;
+      transition: transform 0.65s ease;
+    }
+
+    .portfolio-grid .item:nth-child(1) img {
+      height: 460px;
+    }
+
+    .portfolio-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .portfolio-item-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(12, 12, 12, 0.75) 0%, transparent 55%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      display: flex;
+      align-items: flex-end;
+      padding: 1.8rem;
+    }
+
+    .portfolio-item:hover .portfolio-item-overlay {
+      opacity: 1;
+    }
+
+    .portfolio-item-label {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--white);
+      letter-spacing: 0.05em;
+    }
+
+    .portfolio-item-cat {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .portfolio-footer {
+      text-align: center;
+      margin-top: 3.5rem;
+    }
+
+    /* =============================================
+       HOME — TESTIMONIALS
+    ============================================= */
+    #testimonials {
+      padding: 8rem 5%;
+      background: var(--black);
+      overflow: hidden;
+    }
+
+    .testi-header {
+      text-align: center;
+      margin-bottom: 4.5rem;
+    }
+
+    .testi-track-wrap {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .testi-track {
+      display: flex;
+      gap: 2rem;
+      transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .testi-card {
+      flex: 0 0 calc(33.333% - 1.4rem);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(184, 151, 90, 0.15);
+      padding: 2.8rem;
+      position: relative;
+    }
+
+    .testi-quote {
+      font-family: var(--serif);
+      font-size: 4rem;
+      font-weight: 300;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 1rem;
+      opacity: 0.4;
+    }
+
+    .testi-text {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 2rem;
+    }
+
+    .testi-author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .testi-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(184, 151, 90, 0.3);
+    }
+
+    .testi-name {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--white);
+    }
+
+    .testi-role {
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-top: 3px;
+    }
+
+    .testi-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 2.5rem;
+    }
+
+    .testi-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .testi-dot.active {
+      background: var(--gold);
+      transform: scale(1.3);
+    }
+
+    /* =============================================
+       HOME — CTA BANNER
+    ============================================= */
+    #cta-banner {
+      position: relative;
+      overflow: hidden;
+      padding: 8rem 5%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .cta-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1600&q=80');
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.35);
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .cta-title {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 5vw, 5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--white);
+      margin-bottom: 2rem;
+    }
+
+    .cta-title em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .cta-sub {
+      font-size: 0.88rem;
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 2.8rem;
+    }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    footer {
+      background: var(--black);
+      padding: 5rem 5% 2.5rem;
+      border-top: 1px solid rgba(184, 151, 90, 0.12);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.5fr;
+      gap: 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-bottom: 4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .footer-brand {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: var(--white);
+      letter-spacing: 0.1em;
+      text-transform: lowercase;
+    }
+
+    .footer-brand span {
+      color: var(--gold);
+    }
+
+    .footer-about {
+      font-size: 0.82rem;
+      font-weight: 300;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 1.2rem;
+    }
+
+    .footer-heading {
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.45);
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover {
+      color: var(--gold-light);
+    }
+
+    .footer-contact-item {
+      font-size: 0.8rem;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.45);
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 2rem auto 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-copy {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* =============================================
+       WORK PAGE
+    ============================================= */
+    .page-hero {
+      height: 50vh;
+      min-height: 360px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 5rem 5% 4rem;
+    }
+
+    .page-hero-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.6);
+    }
+
+    .page-hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .page-hero-title {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 300;
+      color: var(--white);
+      line-height: 1;
+    }
+
+    .page-hero-title em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    /* Category Filter */
+    .work-filter {
+      padding: 3.5rem 5% 0;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey-mid);
+      margin-right: 0.5rem;
+    }
+
+    .filter-btn {
+      font-family: var(--sans);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--grey-mid);
+      padding: 8px 20px;
+      border: 1px solid var(--cream);
+      transition: all 0.3s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--black);
+      color: var(--white);
+      border-color: var(--black);
+    }
+
+    /* Work Grid */
+    .work-grid {
+      padding: 3rem 5% 7rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .work-item {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .work-item img {
+      height: 400px;
+      transition: transform 0.6s ease;
+    }
+
+    .work-item:hover img {
+      transform: scale(1.04);
+    }
+
+    .work-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(12, 12, 12, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .work-item:hover .work-overlay {
+      opacity: 1;
+    }
+
+    .work-overlay-title {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: var(--white);
+      letter-spacing: 0.05em;
+    }
+
+    .work-overlay-cat {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+    }
+
+    .work-expand {
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 1.4rem;
+      margin-top: 0.8rem;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .work-item:hover .work-expand {
+      border-color: var(--gold);
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0, 0, 0, 0.92);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox-img {
+      max-width: 88vw;
+      max-height: 88vh;
+      object-fit: contain;
+      animation: lbFade 0.3s ease;
+    }
+
+    @keyframes lbFade {
+      from {
+        opacity: 0;
+        transform: scale(0.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 2rem;
+      font-size: 2rem;
+      color: rgba(255, 255, 255, 0.6);
+      transition: color 0.3s;
+    }
+
+    .lightbox-close:hover {
+      color: var(--gold);
+    }
+
+    .lightbox-prev,
+    .lightbox-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2rem;
+      color: rgba(255, 255, 255, 0.5);
+      transition: color 0.3s;
+      padding: 1.5rem;
+    }
+
+    .lightbox-prev {
+      left: 1rem;
+    }
+
+    .lightbox-next {
+      right: 1rem;
+    }
+
+    .lightbox-prev:hover,
+    .lightbox-next:hover {
+      color: var(--gold);
+    }
+
+    /* =============================================
+       PRICING PAGE
+    ============================================= */
+    .pricing-intro {
+      padding: 6rem 5% 4rem;
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .pricing-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      padding: 2rem 5% 6rem;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: var(--white);
+      padding: 3.5rem 2.5rem;
+      position: relative;
+      border: 1px solid var(--cream);
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pricing-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+    }
+
+    .pricing-card.featured {
+      background: var(--black);
+      color: var(--white);
+      border-color: var(--black);
+      transform: scale(1.05);
+      z-index: 2;
+    }
+
+    .pricing-card.featured:hover {
+      transform: translateY(-10px) scale(1.05);
+    }
+
+    .pricing-card.featured .section-body {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .pricing-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold);
+      color: var(--white);
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 6px 20px;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .pricing-tier {
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .pricing-name {
+      font-family: var(--serif);
+      font-size: 2.2rem;
+      font-weight: 300;
+      line-height: 1;
+      margin-bottom: 1.8rem;
+    }
+
+    .pricing-price {
+      font-family: var(--serif);
+      font-size: 3.2rem;
+      font-weight: 300;
+      line-height: 1;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .pricing-price sup {
+      font-size: 1.1rem;
+      vertical-align: super;
+      margin-right: 4px;
+    }
+
+    .pricing-period {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--grey-mid);
+      margin-bottom: 2.5rem;
+    }
+
+    .pricing-card.featured .pricing-period {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .pricing-features {
+      margin-bottom: auto;
+      padding-bottom: 2.5rem;
+    }
+
+    .pricing-feature {
+      font-size: 0.88rem;
+      font-weight: 300;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      color: var(--grey-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .pricing-card.featured .pricing-feature {
+      border-bottom-color: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .pricing-feature::before {
+      content: '—';
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* Comparison Table */
+    .comparison-section {
+      padding: 6rem 5% 8rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .comp-table-wrap {
+      overflow-x: auto;
+      margin-top: 3rem;
+      border: 1px solid var(--cream);
+    }
+
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      min-width: 800px;
+    }
+
+    .comp-table th,
+    .comp-table td {
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--cream);
+      font-size: 0.85rem;
+    }
+
+    .comp-table th {
+      background: var(--off-white);
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--black);
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .comp-table td:first-child,
+    .comp-table th:first-child {
+      text-align: left;
+      padding-left: 2rem;
+      font-weight: 500;
+      color: var(--grey-dark);
+      width: 30%;
+    }
+
+    .comp-check {
+      color: #2ecc71;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .comp-dash {
+      color: var(--grey-light);
+      font-size: 1.2rem;
+    }
+
+    .comp-featured-col {
+      background: rgba(184, 151, 90, 0.03);
+    }
+
+    /* Add-ons */
+    .addons-section {
+      padding: 4rem 5% 6rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Add-ons Redesign */
+    .addons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .addon-item {
+      display: flex;
+      flex-direction: column;
+      padding: 2.2rem 2rem;
+      background: var(--white);
+      border: 1px solid var(--cream);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .addon-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.4s ease;
+    }
+
+    .addon-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.06);
+      border-color: var(--gold);
+    }
+
+    .addon-item:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .addon-name {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--black);
+      margin-bottom: 0.8rem;
+      letter-spacing: 0.02em;
+    }
+
+    .addon-price {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--gold);
+    }
+
+    .addon-desc {
+      font-size: 0.8rem;
+      font-weight: 300;
+      color: var(--grey-mid);
+      margin-top: 1rem;
+      line-height: 1.6;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+    }
+
+    .addon-item:hover .addon-desc {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* FAQ */
+    .faq-section {
+      padding: 5rem 5% 8rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--cream);
+    }
+
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 1.6rem 0;
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--black);
+      text-align: left;
+      transition: color 0.3s;
+    }
+
+    .faq-question:hover {
+      color: var(--gold);
+    }
+
+    .faq-icon {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.2rem;
+      color: var(--gold);
+      transition: transform 0.4s;
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s ease, padding 0.3s;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 400px;
+    }
+
+    .faq-answer p {
+      font-size: 0.88rem;
+      font-weight: 300;
+      line-height: 1.85;
+      color: var(--grey-mid);
+      padding-bottom: 1.6rem;
+    }
+
+    /* =============================================
+       ABOUT PAGE
+    ============================================= */
+    .about-intro {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7rem;
+      align-items: center;
+      padding: 7rem 5%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .about-img-stack {
+      position: relative;
+    }
+
+    .about-img-main {
+      height: 600px;
+    }
+
+    .about-img-accent {
+      position: absolute;
+      width: 55%;
+      height: 280px;
+      bottom: -40px;
+      right: -40px;
+      border: 3px solid var(--white);
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .about-values {
+      background: var(--black);
+      padding: 7rem 5%;
+    }
+
+    .about-values-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+      margin-top: 4rem;
+    }
+
+    .value-item {
+      text-align: center;
+    }
+
+    .value-num {
+      font-family: var(--serif);
+      font-size: 4rem;
+      font-weight: 300;
+      color: rgba(184, 151, 90, 0.2);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .value-title {
+      font-family: var(--serif);
+      font-size: 1.3rem;
+      font-weight: 300;
+      color: var(--white);
+      margin-bottom: 0.8rem;
+    }
+
+    .value-desc {
+      font-size: 0.82rem;
+      font-weight: 300;
+      line-height: 1.85;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .photographer-section {
+      padding: 7rem 5%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 7rem;
+      align-items: center;
+    }
+
+    .photographer-img {
+      height: 520px;
+    }
+
+    .photo-sig {
+      font-family: var(--serif);
+      font-size: 2.4rem;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--gold);
+      margin-top: 2rem;
+    }
+
+    /* =============================================
+       CONTACT PAGE
+    ============================================= */
+    .contact-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      min-height: calc(100vh - var(--nav-h));
+    }
+
+    .contact-sidebar {
+      background: var(--black);
+      padding: 7rem 5% 7rem 7%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .contact-info {
+      margin-top: 3rem;
+    }
+
+    .contact-info-item {
+      margin-bottom: 2.5rem;
+    }
+
+    .contact-info-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .contact-info-val {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.5;
+    }
+
+    .contact-social {
+      display: flex;
+      gap: 1.2rem;
+      margin-top: 2rem;
+    }
+
+    .contact-social a {
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.35);
+      transition: color 0.3s;
+    }
+
+    .contact-social a:hover {
+      color: var(--gold);
+    }
+
+    .contact-form-wrap {
+      padding: 7rem 7% 7rem 6%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .form-group {
+      margin-bottom: 2rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.62rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--grey-mid);
+      margin-bottom: 0.7rem;
+    }
+
+    .form-input,
+    .form-textarea {
+      display: block;
+      width: 100%;
+      padding: 1rem 0;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--cream);
+      font-family: var(--sans);
+      font-size: 0.92rem;
+      font-weight: 300;
+      color: var(--black);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-bottom-color: var(--gold);
+    }
+
+    .form-textarea {
+      resize: none;
+      height: 120px;
+    }
+
+    .form-note {
+      font-size: 0.72rem;
+      font-weight: 300;
+      color: var(--grey-mid);
+      margin-top: 1rem;
+      line-height: 1.6;
+    }
+
+    /* =============================================
+       RESPONSIVE
+    ============================================= */
+    @media (max-width: 1024px) {
+      .pricing-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+      }
+
+      .work-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --nav-h: 60px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .nav-toggle {
+        display: flex;
+      }
+
+      #intro {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+
+      .intro-img-accent {
+        display: none;
+      }
+
+      .intro-img-wrap img {
+        height: 360px;
+      }
+
+      .intro-years {
+        top: 16px;
+        left: 16px;
+      }
+
+      .portfolio-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .portfolio-grid .item:nth-child(1) {
+        grid-column: span 2;
+      }
+
+      .testi-card {
+        flex: 0 0 calc(90% - 1rem);
+      }
+
+      .pricing-cards {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+      }
+
+      .addons-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-intro {
+        grid-template-columns: 1fr;
+        gap: 4rem;
+      }
+
+      .about-img-accent {
+        display: none;
+      }
+
+      .about-img-main {
+        height: 380px;
+      }
+
+      .values-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .photographer-section {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+
+      .photographer-img {
+        height: 360px;
+      }
+
+      .contact-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-sidebar {
+        padding: 5rem 5%;
+      }
+
+      .contact-form-wrap {
+        padding: 4rem 5%;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .work-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .work-item img {
+        height: 320px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .portfolio-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .portfolio-grid .item:nth-child(1) {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+
+
+  <!-- ============================
+       NAVBAR
+  ============================= -->
+  <nav id="navbar">
+    <div class="nav-brand" onclick="navigateTo('home')">frame<span>slk</span></div>
+    <ul class="nav-links">
+      <li><a class="nav-link active" data-page="home" onclick="navigateTo('home')">Home</a></li>
+      <li><a class="nav-link" data-page="work" onclick="navigateTo('work')">Work</a></li>
+      <li><a class="nav-link" data-page="pricing" onclick="navigateTo('pricing')">Pricing</a></li>
+      <li><a class="nav-link" data-page="about" onclick="navigateTo('about')">About</a></li>
+      <li><a class="nav-link" data-page="contact" onclick="navigateTo('contact')">Contact</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <a class="nav-link" onclick="navigateTo('home');closeMobileNav()">Home</a>
+    <a class="nav-link" onclick="navigateTo('work');closeMobileNav()">Work</a>
+    <a class="nav-link" onclick="navigateTo('pricing');closeMobileNav()">Pricing</a>
+    <a class="nav-link" onclick="navigateTo('about');closeMobileNav()">About</a>
+    <a class="nav-link" onclick="navigateTo('contact');closeMobileNav()">Contact</a>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+    <button class="lightbox-prev" onclick="lbPrev()">&#8592;</button>
+    <img class="lightbox-img" id="lbImg" src="" alt="Portfolio image" />
+    <button class="lightbox-next" onclick="lbNext()">&#8594;</button>
+  </div>
+
+  <!-- ========================================
+       PAGE: HOME
+  ========================================= -->
+  <div class="page active" id="page-home">
+
+    <!-- HERO -->
+    <section id="hero">
+      <div class="hero-bg" style="background-image: url('Landing.jpg')"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <p class="hero-eyebrow">Sri Lanka&rsquo;s Premier Photography Studio</p>
+        <h1 class="hero-title">Capturing <em>Timeless</em><br>Moments with Elegance</h1>
+        <p class="hero-sub">We craft visual stories that last a lifetime</p>
+        <div class="hero-btns">
+          <a class="btn-primary" onclick="navigateTo('work')">View Our Work</a>
+          <a class="btn-outline" onclick="navigateTo('contact')">Book a Session</a>
+        </div>
+      </div>
+      <div class="hero-scroll">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- INTRO SPLIT -->
+    <section id="intro">
+      <div class="intro-img-wrap reveal-left">
+        <img src="https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=900&q=80" alt="Photographer at work" />
+        <div class="intro-img-accent"></div>
+        <div class="intro-years">
+          <strong>8+</strong>
+          <span>Years of<br>Excellence</span>
+        </div>
+      </div>
+      <div class="intro-text reveal-right">
+        <span class="section-label">About frameslk</span>
+        <div class="deco-line"></div>
+        <h2 class="section-title">Where Every <em>Frame</em><br>Tells a Story</h2>
+        <p class="section-body">
+          At frameslk, we believe that a photograph is more than an image — it is a preserved
+          emotion, a stolen breath of time. Based in the heart of Sri Lanka, we specialise in
+          crafting visual narratives for weddings, portraits, and milestone events with an
+          uncompromising dedication to artistry.
+        </p>
+        <div class="intro-stats">
+          <div class="stat"><strong>500+</strong><span>Weddings Captured</span></div>
+          <div class="stat"><strong>1,200+</strong><span>Happy Clients</span></div>
+          <div class="stat"><strong>24</strong><span>International Awards</span></div>
+          <div class="stat"><strong>8</strong><span>Years of Artistry</span></div>
+        </div>
+        <a class="btn-dark" style="margin-top:2.5rem;display:inline-block" onclick="navigateTo('about')">Learn More</a>
+      </div>
+    </section>
+
+    <!-- PORTFOLIO PREVIEW -->
+    <section id="portfolio-preview">
+      <div class="portfolio-header">
+        <div class="reveal">
+          <span class="section-label">Portfolio</span>
+          <div class="deco-line"></div>
+          <h2 class="section-title">Selected <em>Work</em></h2>
+        </div>
+        <a class="btn-dark reveal" onclick="navigateTo('work')">View Full Portfolio</a>
+      </div>
+      <div class="portfolio-grid">
+        <div class="portfolio-item item reveal" onclick="navigateTo('work')">
+          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=1000&q=80" alt="Wedding ceremony" />
+          <div class="portfolio-item-overlay">
+            <div>
+              <span class="portfolio-item-cat">Weddings</span>
+              <div class="portfolio-item-label">The Perera &amp; Silva Wedding</div>
+            </div>
+          </div>
+        </div>
+        <div class="portfolio-item reveal" onclick="navigateTo('work')">
+          <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=700&q=80" alt="Portrait" />
+          <div class="portfolio-item-overlay">
+            <div>
+              <span class="portfolio-item-cat">Portraits</span>
+              <div class="portfolio-item-label">Studio Portrait Collection</div>
+            </div>
+          </div>
+        </div>
+        <div class="portfolio-item reveal" onclick="navigateTo('work')">
+          <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=700&q=80" alt="Events" />
+          <div class="portfolio-item-overlay">
+            <div>
+              <span class="portfolio-item-cat">Events</span>
+              <div class="portfolio-item-label">Grand Gala Evening</div>
+            </div>
+          </div>
+        </div>
+        <div class="portfolio-item reveal" onclick="navigateTo('work')">
+          <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=700&q=80" alt="Wedding portrait" />
+          <div class="portfolio-item-overlay">
+            <div>
+              <span class="portfolio-item-cat">Weddings</span>
+              <div class="portfolio-item-label">Beachside Romance</div>
+            </div>
+          </div>
+        </div>
+        <div class="portfolio-item reveal" onclick="navigateTo('work')">
+          <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=700&q=80" alt="Couple" />
+          <div class="portfolio-item-overlay">
+            <div>
+              <span class="portfolio-item-cat">Couples</span>
+              <div class="portfolio-item-label">Golden Hour Shoot</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-footer reveal">
+        <a class="btn-dark" onclick="navigateTo('work')">View All Projects</a>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="testimonials">
+      <div class="testi-header reveal">
+        <span class="section-label" style="color:var(--gold)">Kind Words</span>
+        <div class="deco-line" style="margin:1.2rem auto 0"></div>
+        <h2 class="section-title section-title-light">What Our <em>Clients</em> Say</h2>
+      </div>
+      <div class="testi-track-wrap">
+        <div class="testi-track" id="testiTrack"></div>
+      </div>
+      <div class="testi-dots" id="testiDots"></div>
+    </section>
+
+    <!-- CTA BANNER -->
+    <section id="cta-banner">
+      <div class="cta-bg"></div>
+      <div class="cta-content reveal">
+        <span class="section-label">Begin Your Journey</span>
+        <div class="deco-line" style="margin:1.2rem auto"></div>
+        <h2 class="cta-title">Let&rsquo;s Capture <em>Your Story</em></h2>
+        <p class="cta-sub">Every love story deserves to be told beautifully. Let us be your visual storytellers.</p>
+        <a class="btn-primary" onclick="navigateTo('contact')">Contact Us</a>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="footer">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">frame<span>slk</span></div>
+          <p class="footer-about">
+            Sri Lanka&rsquo;s premier photography studio, dedicated to capturing timeless moments
+            with artistic precision and heartfelt storytelling.
+          </p>
+        </div>
+        <div>
+          <p class="footer-heading">Navigate</p>
+          <ul class="footer-links">
+            <li><a onclick="navigateTo('home')">Home</a></li>
+            <li><a onclick="navigateTo('work')">Work</a></li>
+            <li><a onclick="navigateTo('pricing')">Pricing</a></li>
+            <li><a onclick="navigateTo('about')">About</a></li>
+            <li><a onclick="navigateTo('contact')">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Services</p>
+          <ul class="footer-links">
+            <li><a>Wedding Photography</a></li>
+            <li><a>Portrait Sessions</a></li>
+            <li><a>Corporate Events</a></li>
+            <li><a>Fine Art Prints</a></li>
+            <li><a>Photo Albums</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Contact</p>
+          <div class="contact-info-item">
+            <p class="footer-contact-item">Colombo 07, Western Province, Sri Lanka</p>
+            <p class="footer-contact-item">+94 77 850 2118</p>
+            <p class="footer-contact-item">hello@frameslk.com</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2025 frameslk. All rights reserved.</p>
+        <p class="footer-copy">Crafted with precision in Sri Lanka</p>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- ========================================
+       PAGE: WORK
+  ========================================= -->
+  <div class="page" id="page-work">
+    <div class="page-hero">
+      <div class="page-hero-bg" style="background-image: url('Work.jpg'), url('https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=1600&q=80')"></div>
+      <div class="page-hero-content">
+        <p class="section-label">Portfolio</p>
+        <h1 class="page-hero-title">Our <em>Work</em></h1>
+      </div>
+    </div>
+
+    <div class="work-filter">
+      <span class="filter-label">Filter by</span>
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="weddings">Weddings</button>
+      <button class="filter-btn" data-filter="portraits">Portraits</button>
+      <button class="filter-btn" data-filter="events">Events</button>
+      <button class="filter-btn" data-filter="couples">Couples</button>
+    </div>
+
+    <div class="work-grid" id="workGrid"></div>
+
+    <footer>
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">frame<span>slk</span></div>
+          <p class="footer-about">
+            Sri Lanka&rsquo;s premier photography studio, dedicated to capturing timeless moments
+            with artistic precision and heartfelt storytelling.
+          </p>
+        </div>
+        <div>
+          <p class="footer-heading">Navigate</p>
+          <ul class="footer-links">
+            <li><a onclick="navigateTo('home')">Home</a></li>
+            <li><a onclick="navigateTo('work')">Work</a></li>
+            <li><a onclick="navigateTo('pricing')">Pricing</a></li>
+            <li><a onclick="navigateTo('about')">About</a></li>
+            <li><a onclick="navigateTo('contact')">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Services</p>
+          <ul class="footer-links">
+            <li><a>Wedding Photography</a></li>
+            <li><a>Portrait Sessions</a></li>
+            <li><a>Corporate Events</a></li>
+            <li><a>Fine Art Prints</a></li>
+            <li><a>Photo Albums</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Contact</p>
+          <div class="contact-info-item">
+            <p class="footer-contact-item">Colombo 07, Western Province, Sri Lanka</p>
+            <p class="footer-contact-item">+94 77 850 2118</p>
+            <p class="footer-contact-item">hello@frameslk.com</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2025 frameslk. All rights reserved.</p>
+        <p class="footer-copy">Crafted with precision in Sri Lanka</p>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- ========================================
+       PAGE: PRICING
+  ========================================= -->
+  <div class="page" id="page-pricing">
+    <div class="page-hero">
+      <div class="page-hero-bg" style="background-image: url('Pricing.jpg'), url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1600&q=80')"></div>
+      <div class="page-hero-content">
+        <p class="section-label">Investment</p>
+        <h1 class="page-hero-title">Our <em>Pricing</em></h1>
+      </div>
+    </div>
+
+    <div class="pricing-intro">
+      <span class="section-label reveal">Transparent Packages</span>
+      <div class="deco-line reveal" style="margin:0 auto 1.2rem"></div>
+      <h2 class="section-title reveal">Choose Your <em>Experience</em></h2>
+      <p class="section-body reveal" style="margin:0 auto">
+        Every package is thoughtfully crafted to deliver exceptional value. All prices are in Sri Lankan Rupees (LKR)
+        and inclusive of professional editing and delivery.
+      </p>
+    </div>
+
+    <div class="pricing-cards">
+      <!-- Basic -->
+      <div class="pricing-card reveal">
+        <p class="pricing-tier">01 — Basic</p>
+        <h3 class="pricing-name">Essential</h3>
+        <div class="pricing-price"><sup>LKR</sup> 45,000</div>
+        <p class="pricing-period">Per Session</p>
+        <div class="pricing-features">
+          <div class="pricing-feature">4-Hour Coverage</div>
+          <div class="pricing-feature">1 Photographer</div>
+          <div class="pricing-feature">150 Edited Photos</div>
+          <div class="pricing-feature">Online Gallery</div>
+          <div class="pricing-feature">14-Day Delivery</div>
+        </div>
+        <a class="btn-dark" onclick="navigateTo('contact')">Book Now</a>
+      </div>
+      <!-- Standard -->
+      <div class="pricing-card reveal">
+        <p class="pricing-tier">02 — Standard</p>
+        <h3 class="pricing-name">Classic</h3>
+        <div class="pricing-price"><sup>LKR</sup> 85,000</div>
+        <p class="pricing-period">Per Session</p>
+        <div class="pricing-features">
+          <div class="pricing-feature">8-Hour Coverage</div>
+          <div class="pricing-feature">2 Photographers</div>
+          <div class="pricing-feature">300 Edited Photos</div>
+          <div class="pricing-feature">Online Gallery</div>
+          <div class="pricing-feature">10-Day Delivery</div>
+          <div class="pricing-feature">1 Photo Album</div>
+        </div>
+        <a class="btn-dark" onclick="navigateTo('contact')">Book Now</a>
+      </div>
+      <!-- Premium FEATURED -->
+      <div class="pricing-card featured reveal">
+        <div class="pricing-badge">Most Popular</div>
+        <p class="pricing-tier">03 — Premium</p>
+        <h3 class="pricing-name" style="color:var(--white)">Prestige</h3>
+        <div class="pricing-price"><sup>LKR</sup> 145,000</div>
+        <p class="pricing-period">Per Session</p>
+        <div class="pricing-features">
+          <div class="pricing-feature">Full-Day Coverage</div>
+          <div class="pricing-feature">2 Photographers + 1 Videographer</div>
+          <div class="pricing-feature">500 Edited Photos</div>
+          <div class="pricing-feature">Private Gallery</div>
+          <div class="pricing-feature">7-Day Delivery</div>
+          <div class="pricing-feature">2 Photo Albums</div>
+          <div class="pricing-feature">Highlight Reel Video</div>
+        </div>
+        <a class="btn-primary" onclick="navigateTo('contact')">Book Now</a>
+      </div>
+      <!-- Luxury -->
+      <div class="pricing-card reveal">
+        <p class="pricing-tier">04 — Luxury</p>
+        <h3 class="pricing-name">Signature</h3>
+        <div class="pricing-price"><sup>LKR</sup> 245,000</div>
+        <p class="pricing-period">Per Session</p>
+        <div class="pricing-features">
+          <div class="pricing-feature">Multi-Day Coverage</div>
+          <div class="pricing-feature">Lead Photographer + Team</div>
+          <div class="pricing-feature">Unlimited Edited Photos</div>
+          <div class="pricing-feature">Bespoke Private Gallery</div>
+          <div class="pricing-feature">Priority 5-Day Delivery</div>
+          <div class="pricing-feature">3 Premium Albums</div>
+          <div class="pricing-feature">Full Cinematic Film</div>
+          <div class="pricing-feature">Drone Aerial Coverage</div>
+        </div>
+        <a class="btn-dark" onclick="navigateTo('contact')">Book Now</a>
+      </div>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="comparison-section">
+      <div style="text-align:center" class="reveal">
+        <span class="section-label">Detailed Comparison</span>
+        <div class="deco-line" style="margin:1.2rem auto 0"></div>
+        <h2 class="section-title">Features <em>At a Glance</em></h2>
+      </div>
+      <div class="comp-table-wrap reveal">
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Essential</th>
+              <th>Classic</th>
+              <th class="comp-featured-col">Prestige</th>
+              <th>Signature</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Coverage Duration</td>
+              <td>4 Hours</td>
+              <td>8 Hours</td>
+              <td class="comp-featured-col">Full Day</td>
+              <td>Multi-Day</td>
+            </tr>
+            <tr>
+              <td>Photographers</td>
+              <td>1</td>
+              <td>2</td>
+              <td class="comp-featured-col">2</td>
+              <td>Lead + Team</td>
+            </tr>
+            <tr>
+              <td>Videographers</td>
+              <td class="comp-dash">—</td>
+              <td class="comp-dash">—</td>
+              <td class="comp-featured-col">1</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>Edited High-Res Photos</td>
+              <td>150</td>
+              <td>300</td>
+              <td class="comp-featured-col">500</td>
+              <td>Unlimited</td>
+            </tr>
+            <tr>
+              <td>Delivery Timeframe</td>
+              <td>14 Days</td>
+              <td>10 Days</td>
+              <td class="comp-featured-col">7 Days</td>
+              <td>5 Days</td>
+            </tr>
+            <tr>
+              <td>Premium Photo Albums</td>
+              <td class="comp-dash">—</td>
+              <td>1</td>
+              <td class="comp-featured-col">2</td>
+              <td>3 Premium</td>
+            </tr>
+            <tr>
+              <td>Drone Aerial Coverage</td>
+              <td class="comp-dash">—</td>
+              <td class="comp-dash">—</td>
+              <td class="comp-featured-col" class="comp-dash">—</td>
+              <td class="comp-check">✓</td>
+            </tr>
+            <tr>
+              <td>Cinematic Highlight Film</td>
+              <td class="comp-dash">—</td>
+              <td class="comp-dash">—</td>
+              <td class="comp-featured-col" class="comp-check">✓</td>
+              <td class="comp-check">✓</td>
+            </tr>
+            <tr>
+              <td>Private Online Gallery</td>
+              <td class="comp-check">✓</td>
+              <td class="comp-check">✓</td>
+              <td class="comp-featured-col" class="comp-check">✓</td>
+              <td class="comp-check">✓</td>
+            </tr>
+            <tr>
+              <td>Pre-Wedding Consultation</td>
+              <td class="comp-check">✓</td>
+              <td class="comp-check">✓</td>
+              <td class="comp-featured-col" class="comp-check">✓</td>
+              <td class="comp-check">✓</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Add-ons -->
+    <div class="addons-section">
+      <span class="section-label reveal">Extras</span>
+      <div class="deco-line reveal"></div>
+      <h2 class="section-title reveal">Add-On <em>Services</em></h2>
+      <div class="addons-grid reveal">
+        <div class="addon-item">
+          <span class="addon-name">Drone Aerial Photography</span>
+          <span class="addon-price">LKR 18,000</span>
+          <p class="addon-desc">Capture stunning bird's-eye views of your venue and ceremony with 4K drone footage and
+            stills.</p>
+        </div>
+        <div class="addon-item">
+          <span class="addon-name">Printed Photo Book (20 pages)</span>
+          <span class="addon-price">LKR 12,500</span>
+          <p class="addon-desc">A beautiful 20-page high-quality handcrafted album to cherish your memories forever.</p>
+        </div>
+        <div class="addon-item">
+          <span class="addon-name">Same-Day Slideshow</span>
+          <span class="addon-price">LKR 15,000</span>
+          <p class="addon-desc">Surprise your guests with a professional highlight reel shown during the evening
+            reception.</p>
+        </div>
+        <div class="addon-item">
+          <span class="addon-name">Cinematic Highlight Reel</span>
+          <span class="addon-price">LKR 35,000</span>
+          <p class="addon-desc">A professionally edited 3-5 minute cinematic film capturing the most emotional moments
+            of your day.</p>
+        </div>
+        <div class="addon-item">
+          <span class="addon-name">Fine Art Framed Print (A1)</span>
+          <span class="addon-price">LKR 8,500</span>
+          <p class="addon-desc">A gallery-quality A1 sized framed print of your absolute favourite shot from the
+            session.</p>
+        </div>
+        <div class="addon-item">
+          <span class="addon-name">Second Venue Coverage</span>
+          <span class="addon-price">LKR 22,000</span>
+          <p class="addon-desc">Dedicated professional coverage for multiple locations or venues on the same day.</p>
+        </div>
+        <div class="addon-item">
+          <span class="addon-name">Engagement Pre-Shoot</span>
+          <span class="addon-price">LKR 28,000</span>
+          <p class="addon-desc">A relaxed 2-hour session at a location of your choice to get comfortable in front of the
+            lens.</p>
+        </div>
+        <div class="addon-item">
+          <span class="addon-name">Rush Delivery (48-Hour)</span>
+          <span class="addon-price">LKR 20,000</span>
+          <p class="addon-desc">Need your photos fast? Receive your full professionally edited gallery within 48 hours
+            of the event.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section">
+      <span class="section-label reveal">Questions</span>
+      <div class="deco-line reveal"></div>
+      <h2 class="section-title reveal">Frequently Asked <em>Questions</em></h2>
+      <div id="faqList"></div>
+    </div>
+
+    <footer>
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">frame<span>slk</span></div>
+          <p class="footer-about">
+            Sri Lanka&rsquo;s premier photography studio, dedicated to capturing timeless moments
+            with artistic precision and heartfelt storytelling.
+          </p>
+        </div>
+        <div>
+          <p class="footer-heading">Navigate</p>
+          <ul class="footer-links">
+            <li><a onclick="navigateTo('home')">Home</a></li>
+            <li><a onclick="navigateTo('work')">Work</a></li>
+            <li><a onclick="navigateTo('pricing')">Pricing</a></li>
+            <li><a onclick="navigateTo('about')">About</a></li>
+            <li><a onclick="navigateTo('contact')">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Services</p>
+          <ul class="footer-links">
+            <li><a>Wedding Photography</a></li>
+            <li><a>Portrait Sessions</a></li>
+            <li><a>Corporate Events</a></li>
+            <li><a>Fine Art Prints</a></li>
+            <li><a>Photo Albums</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Contact</p>
+          <div class="contact-info-item">
+            <p class="footer-contact-item">Colombo 07, Western Province, Sri Lanka</p>
+            <p class="footer-contact-item">+94 77 850 2118</p>
+            <p class="footer-contact-item">hello@frameslk.com</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2025 frameslk. All rights reserved.</p>
+        <p class="footer-copy">Crafted with precision in Sri Lanka</p>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- ========================================
+       PAGE: ABOUT
+  ========================================= -->
+  <div class="page" id="page-about">
+    <div class="page-hero">
+      <div class="page-hero-bg" style="background-image: url('hero-new.png'), url('https://images.unsplash.com/photo-1542038374561-3f1cee33a3c0?w=1600&q=80')"></div>
+      <div class="page-hero-content">
+        <p class="section-label">Our Story</p>
+        <h1 class="page-hero-title"><em>About</em> Us</h1>
+      </div>
+    </div>
+
+    <div class="about-intro">
+      <div class="about-img-stack reveal-left">
+        <img class="about-img-main" src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=900&q=80"
+          alt="Photography studio" />
+        <img class="about-img-accent" src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=600&q=80"
+          alt="Wedding detail" />
+      </div>
+      <div class="reveal-right">
+        <span class="section-label">Our Philosophy</span>
+        <div class="deco-line"></div>
+        <h2 class="section-title">Born from <em>Passion</em>,<br>Driven by Art</h2>
+        <p class="section-body">
+          frameslk was founded in 2016 by a passionate collective of visual artists united by
+          one belief: that photography is the purest form of storytelling. What began as a solo
+          venture in Colombo&rsquo;s creative quarter has blossomed into Sri Lanka&rsquo;s most
+          recognised luxury photography studio.
+        </p>
+        <p class="section-body" style="margin-top:1.2rem">
+          We approach every commission as a collaboration — listening intently to each client&rsquo;s
+          vision and translating it into images of enduring beauty. From the grandest wedding
+          ceremonies to the most intimate portrait sessions, we bring the same relentless pursuit
+          of perfection to every frame.
+        </p>
+      </div>
+    </div>
+
+    <!-- Values -->
+    <div class="about-values">
+      <div class="about-values-inner">
+        <div style="text-align:center" class="reveal">
+          <span class="section-label">What We Stand For</span>
+          <div class="deco-line" style="margin:1.2rem auto 0"></div>
+          <h2 class="section-title section-title-light">Our Core <em>Values</em></h2>
+        </div>
+        <div class="values-grid">
+          <div class="value-item reveal">
+            <div class="value-num">01</div>
+            <h3 class="value-title">Authenticity</h3>
+            <p class="value-desc">We capture genuine emotions — not posed performances. Every photograph reflects the
+              true essence of the moment.</p>
+          </div>
+          <div class="value-item reveal">
+            <div class="value-num">02</div>
+            <h3 class="value-title">Craftsmanship</h3>
+            <p class="value-desc">From the moment we press the shutter to the final edited image, every detail is
+              handled with precision and care.</p>
+          </div>
+          <div class="value-item reveal">
+            <div class="value-num">03</div>
+            <h3 class="value-title">Timelessness</h3>
+            <p class="value-desc">Our aesthetic transcends trends. We create images that will feel as powerful in
+              decades as they do today.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lead Photographer -->
+    <div class="photographer-section">
+      <div class="reveal-left">
+        <img class="photographer-img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80"
+          alt="Lead photographer" />
+      </div>
+      <div class="reveal-right">
+        <span class="section-label">Meet the Artist</span>
+        <div class="deco-line"></div>
+        <h2 class="section-title">Kasun <em>Perera</em></h2>
+        <p class="section-body" style="margin-bottom:1.2rem">
+          With over eight years of experience and more than 500 weddings photographed across
+          South Asia, Kasun Perera is the creative force behind frameslk. A graduate of
+          the Academy of Visual Arts, Colombo, his work has been featured in Vogue India,
+          Harper&rsquo;s Bazaar Bride, and numerous international photography journals.
+        </p>
+        <p class="section-body">
+          Kasun&rsquo;s signature style — soft natural light, editorial composition, and emotionally
+          resonant storytelling — has earned him a devoted following among discerning couples
+          and brands across Sri Lanka and beyond.
+        </p>
+        <div class="photo-sig">Kasun Perera</div>
+        <p
+          style="font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--grey-mid);margin-top:0.5rem">
+          Founder &amp; Lead Photographer
+        </p>
+        <a class="btn-dark" style="margin-top:2.2rem;display:inline-block" onclick="navigateTo('contact')">Work With
+          Kasun</a>
+      </div>
+    </div>
+
+    <section id="cta-banner">
+      <div class="cta-bg"></div>
+      <div class="cta-content reveal">
+        <h2 class="cta-title">Ready to <em>Begin</em>?</h2>
+        <p class="cta-sub">Let us create something beautiful together.</p>
+        <a class="btn-primary" onclick="navigateTo('contact')">Get in Touch</a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">frame<span>slk</span></div>
+          <p class="footer-about">
+            Sri Lanka&rsquo;s premier photography studio, dedicated to capturing timeless moments
+            with artistic precision and heartfelt storytelling.
+          </p>
+        </div>
+        <div>
+          <p class="footer-heading">Navigate</p>
+          <ul class="footer-links">
+            <li><a onclick="navigateTo('home')">Home</a></li>
+            <li><a onclick="navigateTo('work')">Work</a></li>
+            <li><a onclick="navigateTo('pricing')">Pricing</a></li>
+            <li><a onclick="navigateTo('about')">About</a></li>
+            <li><a onclick="navigateTo('contact')">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Services</p>
+          <ul class="footer-links">
+            <li><a>Wedding Photography</a></li>
+            <li><a>Portrait Sessions</a></li>
+            <li><a>Corporate Events</a></li>
+            <li><a>Fine Art Prints</a></li>
+            <li><a>Photo Albums</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Contact</p>
+          <div class="contact-info-item">
+            <p class="footer-contact-item">Colombo 07, Western Province, Sri Lanka</p>
+            <p class="footer-contact-item">+94 77 850 2118</p>
+            <p class="footer-contact-item">hello@frameslk.com</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2025 frameslk. All rights reserved.</p>
+        <p class="footer-copy">Crafted with precision in Sri Lanka</p>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- ========================================
+       PAGE: CONTACT
+  ========================================= -->
+  <div class="page" id="page-contact">
+    <div class="page-hero">
+      <div class="page-hero-bg" style="background-image: url('https://images.unsplash.com/photo-1423784346385-c1d4dac9893a?w=1600&q=80')"></div>
+      <div class="page-hero-content">
+        <p class="section-label">Connect</p>
+        <h1 class="page-hero-title">Contact <em>Us</em></h1>
+      </div>
+    </div>
+    <div style="padding-top:4rem">
+      <div class="contact-wrap">
+        <div class="contact-sidebar">
+          <span class="section-label" style="color:var(--gold)">Get in Touch</span>
+          <div class="deco-line"></div>
+          <h2 class="section-title section-title-light">Let&rsquo;s <em>Create</em><br>Together</h2>
+          <p class="section-body" style="color:rgba(255,255,255,0.45);margin-top:1.5rem">
+            We&rsquo;d love to hear about your vision. Fill in the form and we&rsquo;ll be in touch
+            within 24 hours. Alternatively, reach us directly on WhatsApp.
+          </p>
+          <div class="contact-info">
+            <div class="contact-info-item">
+              <p class="contact-info-label">Phone / WhatsApp</p>
+              <p class="contact-info-val">+94 77 850 2118</p>
+            </div>
+            <div class="contact-info-item">
+              <p class="contact-info-label">Email</p>
+              <p class="contact-info-val">hello@frameslk.com</p>
+            </div>
+            <div class="contact-info-item">
+              <p class="contact-info-label">Studio</p>
+              <p class="contact-info-val">32 Flower Road, Colombo 07<br>Western Province, Sri Lanka</p>
+            </div>
+            <div class="contact-info-item">
+              <p class="contact-info-label">Hours</p>
+              <p class="contact-info-val">Monday – Saturday<br>9:00 AM – 6:00 PM</p>
+            </div>
+          </div>
+          <div class="contact-social">
+            <a href="#">Instagram</a>
+            <a href="#">Facebook</a>
+            <a href="#">Pinterest</a>
+          </div>
+        </div>
+
+        <div class="contact-form-wrap">
+          <span class="section-label">Send a Message</span>
+          <div class="deco-line"></div>
+          <h3 class="section-title" style="font-size:clamp(1.8rem,3vw,2.6rem);margin-bottom:2.5rem">
+            Tell Us About<br>Your <em>Vision</em>
+          </h3>
+
+          <div id="contactForm">
+            <div class="form-group">
+              <label class="form-label" for="fname">Full Name</label>
+              <input class="form-input" type="text" id="fname" placeholder="Your full name" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fphone">Phone Number</label>
+              <input class="form-input" type="tel" id="fphone" placeholder="+94 77 000 0000" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="femail">Email Address</label>
+              <input class="form-input" type="email" id="femail" placeholder="your@email.com" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="fmsg">Your Message</label>
+              <textarea class="form-textarea" id="fmsg"
+                placeholder="Tell us about your event, preferred dates, and any special requests..."></textarea>
+            </div>
+            <p class="form-note">
+              Upon submitting, you will be redirected to WhatsApp with your message pre-filled.
+              This ensures the fastest possible response from our team.
+            </p>
+            <div style="margin-top:2rem">
+              <button class="btn-primary" id="submitBtn" onclick="handleContactSubmit()">Send via WhatsApp</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">frame<span>slk</span></div>
+          <p class="footer-about">
+            Sri Lanka&rsquo;s premier photography studio, dedicated to capturing timeless moments
+            with artistic precision and heartfelt storytelling.
+          </p>
+        </div>
+        <div>
+          <p class="footer-heading">Navigate</p>
+          <ul class="footer-links">
+            <li><a onclick="navigateTo('home')">Home</a></li>
+            <li><a onclick="navigateTo('work')">Work</a></li>
+            <li><a onclick="navigateTo('pricing')">Pricing</a></li>
+            <li><a onclick="navigateTo('about')">About</a></li>
+            <li><a onclick="navigateTo('contact')">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Services</p>
+          <ul class="footer-links">
+            <li><a>Wedding Photography</a></li>
+            <li><a>Portrait Sessions</a></li>
+            <li><a>Corporate Events</a></li>
+            <li><a>Fine Art Prints</a></li>
+            <li><a>Photo Albums</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Contact</p>
+          <div class="contact-info-item">
+            <p class="footer-contact-item">Colombo 07, Western Province, Sri Lanka</p>
+            <p class="footer-contact-item">+94 77 850 2118</p>
+            <p class="footer-contact-item">hello@frameslk.com</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2025 frameslk. All rights reserved.</p>
+        <p class="footer-copy">Crafted with precision in Sri Lanka</p>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- =============================================
+       JAVASCRIPT
+  ============================================= -->
+  <script>
+
+
+    /* -----------------------------------------------
+       NAVIGATION
+    ----------------------------------------------- */
+    let currentPage = 'home';
+
+    function navigateTo(page) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      // Show target page
+      document.getElementById('page-' + page).classList.add('active');
+      // Update nav links
+      document.querySelectorAll('.nav-link').forEach(l => {
+        l.classList.toggle('active', l.dataset.page === page);
+      });
+      currentPage = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Re-trigger scroll animations
+      setTimeout(initReveal, 100);
+    }
+
+    /* Navbar toggle */
+    const navToggle = document.getElementById('navToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    navToggle.addEventListener('click', () => {
+      navToggle.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+    });
+    function closeMobileNav() {
+      navToggle.classList.remove('open');
+      mobileNav.classList.remove('open');
+    }
+
+    /* Navbar scroll effect */
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+    });
+    document.getElementById('navbar').classList.add('scrolled');
+
+    /* -----------------------------------------------
+       SCROLL REVEAL
+    ----------------------------------------------- */
+    function initReveal() {
+      const els = document.querySelectorAll('#page-' + currentPage + ' .reveal, #page-' + currentPage + ' .reveal-left, #page-' + currentPage + ' .reveal-right');
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      els.forEach(el => obs.observe(el));
+    }
+    initReveal();
+    window.addEventListener('scroll', initReveal, { passive: true });
+
+    /* -----------------------------------------------
+       TESTIMONIALS DATA & CAROUSEL
+    ----------------------------------------------- */
+    const testimonials = [
+      { text: "frameslk captured our wedding day with extraordinary artistry. Every image feels like a painting — we are moved every time we look at the album.", name: "Dilani & Saman Ratnayake", role: "Wedding — Colombo", avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&q=80" },
+      { text: "The portraits Kasun took of our family are the most treasured images we own. His ability to draw out natural emotion is unparalleled.", name: "Priya Wickramasinghe", role: "Family Portrait Session", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" },
+      { text: "Our corporate gala was documented beautifully. Every key moment was captured without us even noticing the camera. Truly professional.", name: "Rohan Mendis", role: "Corporate Event", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80" },
+      { text: "From our first consultation to receiving the final gallery, the frameslk experience was absolutely seamless and memorable.", name: "Chathuri & Lahiru Fernando", role: "Wedding — Kandy", avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=80" },
+      { text: "I commissioned frameslk for a solo portrait series. The results exceeded every expectation — bold, emotive, and timeless.", name: "Amaya Seneviratne", role: "Creative Portrait", avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&q=80" },
+      { text: "The team's attention to lighting and composition at our beach wedding was extraordinary. Every shot is gallery-worthy.", name: "Nisha & Dinesh Kumar", role: "Wedding — Mirissa", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80" },
+      { text: "We chose the Luxury package and it was worth every rupee. The cinematic film they produced made us cry with joy.", name: "Ayesha & Tariq Hassan", role: "Wedding — Galle", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&q=80" },
+      { text: "The engagement shoot was so relaxed and fun — Kasun made us feel completely at ease. The photos tell our story perfectly.", name: "Nethmi & Ishan Liyanage", role: "Engagement Session", avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&q=80" },
+      { text: "frameslk photographed our product launch and brand campaign. Sophisticated, creative, and delivered ahead of schedule.", name: "Sachini de Silva", role: "Commercial Campaign", avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=100&q=80" },
+      { text: "Our daughter's 18th birthday photos are stunning. The team brought so much warmth and creative energy to the session.", name: "Kumari Wijesinghe", role: "Milestone Portrait", avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=100&q=80" },
+      { text: "I have worked with photographers across three continents — frameslk stands among the very best. Truly world-class artistry.", name: "James Alderton", role: "International Client", avatar: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=100&q=80" },
+      { text: "The drone aerial photography of our hilltop ceremony was breathtaking. Guests are still talking about the images months later.", name: "Malini & Pradeep Jayasuriya", role: "Wedding — Nuwara Eliya", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80" }
+    ];
+
+    const PER_GROUP = 3;
+    let testiIndex = 0;
+    const totalGroups = Math.ceil(testimonials.length / PER_GROUP);
+
+    function buildTestimonials() {
+      const track = document.getElementById('testiTrack');
+      const dots = document.getElementById('testiDots');
+      track.innerHTML = '';
+      dots.innerHTML = '';
+      testimonials.forEach(t => {
+        track.innerHTML += `
+          <div class="testi-card">
+            <div class="testi-quote">"</div>
+            <p class="testi-text">${t.text}</p>
+            <div class="testi-author">
+              <img class="testi-avatar" src="${t.avatar}" alt="${t.name}" />
+              <div>
+                <div class="testi-name">${t.name}</div>
+                <span class="testi-role">${t.role}</span>
+              </div>
+            </div>
+          </div>`;
+      });
+      for (let i = 0; i < totalGroups; i++) {
+        dots.innerHTML += `<div class="testi-dot${i === 0 ? ' active' : ''}" onclick="goToTestiGroup(${i})"></div>`;
+      }
+      updateTestiSlide();
+    }
+
+    function updateTestiSlide() {
+      const track = document.getElementById('testiTrack');
+      const cardW = track.querySelector('.testi-card').offsetWidth;
+      const gap = 32;
+      const offset = testiIndex * PER_GROUP * (cardW + gap);
+      track.style.transform = `translateX(-${offset}px)`;
+      document.querySelectorAll('.testi-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === testiIndex);
+      });
+    }
+
+    function goToTestiGroup(i) {
+      testiIndex = i;
+      updateTestiSlide();
+    }
+
+    // Auto-advance testimonials
+    setInterval(() => {
+      testiIndex = (testiIndex + 1) % totalGroups;
+      updateTestiSlide();
+    }, 4500);
+
+    buildTestimonials();
+
+    /* -----------------------------------------------
+       WORK / PORTFOLIO DATA
+    ----------------------------------------------- */
+    const portfolioItems = [
+      { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80', title: 'The Silva Wedding', cat: 'weddings' },
+      { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80', title: 'Studio Portrait', cat: 'portraits' },
+      { src: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80', title: 'Gala Evening', cat: 'events' },
+      { src: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80', title: 'Beachside Ceremony', cat: 'weddings' },
+      { src: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800&q=80', title: 'Golden Hour', cat: 'couples' },
+      { src: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=800&q=80', title: 'The Mendis Wedding', cat: 'weddings' },
+      { src: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80', title: 'Editorial Portrait', cat: 'portraits' },
+      { src: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80', title: 'Corporate Gala', cat: 'events' },
+      { src: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&q=80', title: 'Floral Ceremony', cat: 'weddings' },
+      { src: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=800&q=80', title: 'Couple Session', cat: 'couples' },
+      { src: 'Landing.jpg', title: 'Hillside Wedding', cat: 'weddings' },
+      { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80', title: 'Men\'s Portrait', cat: 'portraits' },
+    ];
+
+    let currentFilter = 'all';
+
+    function buildWorkGrid() {
+      const grid = document.getElementById('workGrid');
+      grid.innerHTML = '';
+      const filtered = currentFilter === 'all'
+        ? portfolioItems
+        : portfolioItems.filter(i => i.cat === currentFilter);
+      filtered.forEach((item, idx) => {
+        grid.innerHTML += `
+          <div class="work-item" data-idx="${idx}" data-cat="${item.cat}" onclick="openLightbox(${portfolioItems.indexOf(item)})">
+            <img src="${item.src}" alt="${item.title}" />
+            <div class="work-overlay">
+              <span class="work-overlay-cat">${item.cat}</span>
+              <div class="work-overlay-title">${item.title}</div>
+              <div class="work-expand">+</div>
+            </div>
+          </div>`;
+      });
+    }
+    buildWorkGrid();
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        buildWorkGrid();
+      });
+    });
+
+    /* -----------------------------------------------
+       LIGHTBOX
+    ----------------------------------------------- */
+    let lbCurrent = 0;
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lbImg');
+
+    function openLightbox(idx) {
+      lbCurrent = idx;
+      lbImg.src = portfolioItems[idx].src;
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function lbPrev() {
+      lbCurrent = (lbCurrent - 1 + portfolioItems.length) % portfolioItems.length;
+      lbImg.style.animation = 'none';
+      void lbImg.offsetWidth;
+      lbImg.style.animation = '';
+      lbImg.src = portfolioItems[lbCurrent].src;
+    }
+    function lbNext() {
+      lbCurrent = (lbCurrent + 1) % portfolioItems.length;
+      lbImg.style.animation = 'none';
+      void lbImg.offsetWidth;
+      lbImg.style.animation = '';
+      lbImg.src = portfolioItems[lbCurrent].src;
+    }
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', e => {
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') lbPrev();
+      if (e.key === 'ArrowRight') lbNext();
+    });
+
+    /* -----------------------------------------------
+       FAQ
+    ----------------------------------------------- */
+    const faqs = [
+      { q: "How far in advance should I book?", a: "We recommend booking at least 6–12 months in advance for weddings, particularly during peak season (December to April). For portrait and corporate sessions, 4–6 weeks' notice is typically sufficient, though we do accommodate last-minute bookings when availability allows." },
+      { q: "Do you travel for destination sessions?", a: "Absolutely. frameslk has photographed weddings and portrait sessions across Sri Lanka and internationally in India, the Maldives, and Europe. Travel and accommodation costs for destinations outside Colombo are quoted separately based on location." },
+      { q: "How are photos delivered?", a: "All edited photographs are delivered via a private, password-protected online gallery. You will receive a download link valid for 12 months after delivery. Physical albums and prints are dispatched by courier to your preferred address." },
+      { q: "Do you offer payment plans?", a: "Yes. We require a 30% retainer to confirm your booking, with the balance due two weeks before your session date. For our Luxury package, a structured three-instalment plan is available. Please contact us to discuss your preferred arrangement." },
+      { q: "Will there be a contract?", a: "Yes, every engagement is covered by a clear, comprehensive contract outlining all deliverables, timelines, and terms. We believe transparency is the foundation of a great working relationship, and we are happy to discuss any aspect of the agreement before signing." },
+      { q: "Can we request specific shots or a shot list?", a: "Of course. We encourage clients to share mood boards, reference images, and must-have shot lists during our pre-session consultation. While we also rely on our artistic instinct to capture spontaneous moments, we always ensure your key requests are met." },
+      { q: "What happens if you fall ill on our wedding day?", a: "In the rare event of an emergency, we have a trusted network of equally talented photographers we can call upon. You would be notified immediately, and we would ensure seamless coverage. Your day is never left unattended." },
+    ];
+
+    const faqList = document.getElementById('faqList');
+    faqs.forEach((f, i) => {
+      faqList.innerHTML += `
+        <div class="faq-item" id="faq-${i}">
+          <button class="faq-question" onclick="toggleFaq(${i})">
+            <span>${f.q}</span>
+            <div class="faq-icon">+</div>
+          </button>
+          <div class="faq-answer"><p>${f.a}</p></div>
+        </div>`;
+    });
+
+    function toggleFaq(i) {
+      const item = document.getElementById('faq-' + i);
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    /* -----------------------------------------------
+       CONTACT — WHATSAPP REDIRECT
+    ----------------------------------------------- */
+    function handleContactSubmit() {
+      const name = document.getElementById('fname').value.trim();
+      const phone = document.getElementById('fphone').value.trim();
+      const email = document.getElementById('femail').value.trim();
+      const msg = document.getElementById('fmsg').value.trim();
+
+      if (!name || !msg) {
+        alert('Please enter your name and message before submitting.');
+        return;
+      }
+
+      const waNumber = '94778502118';
+      const waText = encodeURIComponent(
+        `Hello frameslk,\n\nMy name is ${name}.\nPhone: ${phone || 'Not provided'}\nEmail: ${email || 'Not provided'}\n\nMessage:\n${msg}\n\nLooking forward to hearing from you.`
+      );
+      const waURL = `https://wa.me/${waNumber}?text=${waText}`;
+      window.open(waURL, '_blank');
+    }
+
+    /* -----------------------------------------------
+       WINDOW RESIZE — UPDATE TESTIMONIAL SLIDE
+    ----------------------------------------------- */
+    window.addEventListener('resize', updateTestiSlide);
+  </script>
+</body>
+
+</html>
