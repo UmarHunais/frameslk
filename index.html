@@ -695,18 +695,35 @@
     }
 
     .testi-track-wrap {
-      overflow: hidden;
       position: relative;
     }
 
     .testi-track {
+      position: relative;
+    }
+
+    .testi-group {
       display: flex;
       gap: 2rem;
-      transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      transform: scale(0.98);
+    }
+
+    .testi-group.active {
+      opacity: 1;
+      pointer-events: auto;
+      position: relative;
+      transform: scale(1);
     }
 
     .testi-card {
-      flex: 0 0 calc(33.333% - 1.4rem);
+      flex: 1;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(184, 151, 90, 0.15);
       padding: 2.8rem;
@@ -1137,6 +1154,118 @@
     .lightbox-prev:hover,
     .lightbox-next:hover {
       color: var(--gold);
+    }
+
+    /* =============================================
+       ALBUM PAGE
+    ============================================= */
+    .album-header {
+      padding: 8rem 5% 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .album-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--grey-mid);
+      margin-bottom: 2rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .album-back:hover {
+      color: var(--black);
+    }
+
+    .album-title {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 300;
+      color: var(--black);
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+
+    .album-cat {
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .album-grid {
+      column-count: 3;
+      column-gap: 1.5rem;
+      padding: 2rem 5% 6rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 900px) {
+      .album-grid {
+        column-count: 2;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .album-grid {
+        column-count: 1;
+      }
+    }
+
+    .album-item {
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      break-inside: avoid;
+    }
+
+    .album-item img {
+      width: 100%;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .album-item:hover img {
+      transform: scale(1.03);
+    }
+
+    .album-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(12, 12, 12, 0.4);
+      opacity: 0;
+      transition: opacity 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .album-item:hover .album-overlay {
+      opacity: 1;
+    }
+
+    .album-expand {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 1.4rem;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .album-item:hover .album-expand {
+      background: var(--white);
+      color: var(--black);
     }
 
     /* =============================================
@@ -1750,8 +1879,13 @@
         grid-column: span 2;
       }
 
+      .testi-group {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
       .testi-card {
-        flex: 0 0 calc(90% - 1rem);
+        flex: 1 1 auto;
       }
 
       .pricing-cards {
@@ -1823,6 +1957,10 @@
 
       .portfolio-grid .item:nth-child(1) {
         grid-column: span 1;
+      }
+
+      .album-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       }
     }
   </style>
@@ -2121,6 +2259,66 @@
       </div>
     </footer>
   </div>
+
+  <!-- ========================================
+       PAGE: ALBUM
+  ========================================= -->
+  <div class="page" id="page-album">
+    <div class="album-header">
+      <div class="album-back" onclick="navigateTo('work')">
+        <span>&#8592;</span> Back to Portfolio
+      </div>
+      <p class="album-cat" id="albumCat">Category</p>
+      <h1 class="album-title" id="albumTitle">Album Title</h1>
+    </div>
+    <div class="album-grid" id="albumGrid"></div>
+    
+    <footer>
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">frame<span>slk</span></div>
+          <p class="footer-about">
+            Sri Lanka&rsquo;s premier photography studio, dedicated to capturing timeless moments
+            with artistic precision and heartfelt storytelling.
+          </p>
+        </div>
+        <div>
+          <p class="footer-heading">Navigate</p>
+          <ul class="footer-links">
+            <li><a onclick="navigateTo('home')">Home</a></li>
+            <li><a onclick="navigateTo('work')">Work</a></li>
+            <li><a onclick="navigateTo('pricing')">Pricing</a></li>
+            <li><a onclick="navigateTo('about')">About</a></li>
+            <li><a onclick="navigateTo('contact')">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Services</p>
+          <ul class="footer-links">
+            <li><a>Wedding Photography</a></li>
+            <li><a>Portrait Sessions</a></li>
+            <li><a>Corporate Events</a></li>
+            <li><a>Fine Art Prints</a></li>
+            <li><a>Photo Albums</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer-heading">Contact</p>
+          <div class="contact-info-item">
+            <p class="footer-contact-item">Colombo 07, Western Province, Sri Lanka</p>
+            <p class="footer-contact-item">+94 77 850 2118</p>
+            <p class="footer-contact-item">hello@frameslk.com</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2025 frameslk. All rights reserved.</p>
+        <p class="footer-copy">Crafted with precision in Sri Lanka</p>
+      </div>
+    </footer>
+  </div>
+
+
 
 
   <!-- ========================================
@@ -2786,32 +2984,34 @@
       const dots = document.getElementById('testiDots');
       track.innerHTML = '';
       dots.innerHTML = '';
-      testimonials.forEach(t => {
-        track.innerHTML += `
-          <div class="testi-card">
-            <div class="testi-quote">"</div>
-            <p class="testi-text">${t.text}</p>
-            <div class="testi-author">
-              <img class="testi-avatar" src="${t.avatar}" alt="${t.name}" />
-              <div>
-                <div class="testi-name">${t.name}</div>
-                <span class="testi-role">${t.role}</span>
-              </div>
-            </div>
-          </div>`;
-      });
+      
       for (let i = 0; i < totalGroups; i++) {
+        const groupCards = testimonials.slice(i * PER_GROUP, (i + 1) * PER_GROUP);
+        let groupHTML = `<div class="testi-group${i === 0 ? ' active' : ''}" id="testi-group-${i}">`;
+        groupCards.forEach(t => {
+          groupHTML += `
+            <div class="testi-card">
+              <div class="testi-quote">"</div>
+              <p class="testi-text">${t.text}</p>
+              <div class="testi-author">
+                <img class="testi-avatar" src="${t.avatar}" alt="${t.name}" />
+                <div>
+                  <div class="testi-name">${t.name}</div>
+                  <span class="testi-role">${t.role}</span>
+                </div>
+              </div>
+            </div>`;
+        });
+        groupHTML += `</div>`;
+        track.innerHTML += groupHTML;
         dots.innerHTML += `<div class="testi-dot${i === 0 ? ' active' : ''}" onclick="goToTestiGroup(${i})"></div>`;
       }
-      updateTestiSlide();
     }
 
     function updateTestiSlide() {
-      const track = document.getElementById('testiTrack');
-      const cardW = track.querySelector('.testi-card').offsetWidth;
-      const gap = 32;
-      const offset = testiIndex * PER_GROUP * (cardW + gap);
-      track.style.transform = `translateX(-${offset}px)`;
+      document.querySelectorAll('.testi-group').forEach((g, i) => {
+        g.classList.toggle('active', i === testiIndex);
+      });
       document.querySelectorAll('.testi-dot').forEach((d, i) => {
         d.classList.toggle('active', i === testiIndex);
       });
@@ -2833,19 +3033,47 @@
     /* -----------------------------------------------
        WORK / PORTFOLIO DATA
     ----------------------------------------------- */
+    const localWeddingImages = [
+      'alvin-mahmudov-9_XfcBxf_uo-unsplash.jpg',
+      'drew-coffman-llWjwo200fo-unsplash.jpg',
+      'evelina-friman-hw_sKmjb0ns-unsplash.jpg',
+      'jeremy-wong-weddings-464ps_nOflw-unsplash.jpg',
+      'jeremy-wong-weddings-K8KiCHh4WU4-unsplash.jpg',
+      'junior-reis-xMDo8y776uE-unsplash.jpg',
+      'nathan-dumlao-rGHO4XSF0Qk-unsplash.jpg',
+      'samantha-gades-N1CZNuM_Fd8-unsplash.jpg',
+      'tom-the-photographer-8yPA6ZYq0-s-unsplash.jpg',
+      'ulyana-tim-AbnCRgL2DNs-unsplash.jpg'
+    ];
+    const weddingSet = [...localWeddingImages, ...localWeddingImages, ...localWeddingImages]; // 30 images
+
+    const portraitSet = [...localWeddingImages, ...localWeddingImages].sort(() => Math.random() - 0.5);
+
+    const localEventImages = [
+      'Party1.jpg',
+      'Party2.jpg',
+      'Party3.jpg',
+      'Party4.jpg',
+      'Party5.jpg'
+    ];
+    
+    const eventSet = [...localEventImages, ...localEventImages, ...localEventImages, ...localEventImages, ...localEventImages];
+
+    const coupleSet = [...localWeddingImages, ...localWeddingImages, ...localWeddingImages].sort(() => Math.random() - 0.5);
+
     const portfolioItems = [
-      { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80', title: 'The Silva Wedding', cat: 'weddings' },
-      { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80', title: 'Studio Portrait', cat: 'portraits' },
-      { src: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80', title: 'Gala Evening', cat: 'events' },
-      { src: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80', title: 'Beachside Ceremony', cat: 'weddings' },
-      { src: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800&q=80', title: 'Golden Hour', cat: 'couples' },
-      { src: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=800&q=80', title: 'The Mendis Wedding', cat: 'weddings' },
-      { src: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80', title: 'Editorial Portrait', cat: 'portraits' },
-      { src: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80', title: 'Corporate Gala', cat: 'events' },
-      { src: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&q=80', title: 'Floral Ceremony', cat: 'weddings' },
-      { src: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=800&q=80', title: 'Couple Session', cat: 'couples' },
-      { src: 'Landing.jpg', title: 'Hillside Wedding', cat: 'weddings' },
-      { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80', title: 'Men\'s Portrait', cat: 'portraits' },
+      { src: 'alvin-mahmudov-9_XfcBxf_uo-unsplash.jpg', title: 'The Silva Wedding', cat: 'weddings', images: weddingSet },
+      { src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80', title: 'Studio Portrait', cat: 'portraits', images: portraitSet },
+      { src: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80', title: 'Gala Evening', cat: 'events', images: eventSet },
+      { src: 'evelina-friman-hw_sKmjb0ns-unsplash.jpg', title: 'Beachside Ceremony', cat: 'weddings', images: weddingSet },
+      { src: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800&q=80', title: 'Golden Hour', cat: 'couples', images: coupleSet },
+      { src: 'jeremy-wong-weddings-K8KiCHh4WU4-unsplash.jpg', title: 'The Mendis Wedding', cat: 'weddings', images: weddingSet },
+      { src: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80', title: 'Editorial Portrait', cat: 'portraits', images: portraitSet },
+      { src: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80', title: 'Corporate Gala', cat: 'events', images: eventSet },
+      { src: 'samantha-gades-N1CZNuM_Fd8-unsplash.jpg', title: 'Floral Ceremony', cat: 'weddings', images: weddingSet },
+      { src: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=800&q=80', title: 'Couple Session', cat: 'couples', images: coupleSet },
+      { src: 'Landing.jpg', title: 'Hillside Wedding', cat: 'weddings', images: weddingSet },
+      { src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80', title: 'Men\'s Portrait', cat: 'portraits', images: portraitSet },
     ];
 
     let currentFilter = 'all';
@@ -2858,7 +3086,7 @@
         : portfolioItems.filter(i => i.cat === currentFilter);
       filtered.forEach((item, idx) => {
         grid.innerHTML += `
-          <div class="work-item" data-idx="${idx}" data-cat="${item.cat}" onclick="openLightbox(${portfolioItems.indexOf(item)})">
+          <div class="work-item" data-idx="${idx}" data-cat="${item.cat}" onclick="openAlbum(${portfolioItems.indexOf(item)})">
             <img src="${item.src}" alt="${item.title}" />
             <div class="work-overlay">
               <span class="work-overlay-cat">${item.cat}</span>
@@ -2881,15 +3109,39 @@
     });
 
     /* -----------------------------------------------
-       LIGHTBOX
+       ALBUM & LIGHTBOX
     ----------------------------------------------- */
+    let currentAlbumIndex = -1;
     let lbCurrent = 0;
     const lightbox = document.getElementById('lightbox');
     const lbImg = document.getElementById('lbImg');
 
-    function openLightbox(idx) {
-      lbCurrent = idx;
-      lbImg.src = portfolioItems[idx].src;
+    function openAlbum(idx) {
+      currentAlbumIndex = idx;
+      const album = portfolioItems[idx];
+      document.getElementById('albumTitle').textContent = album.title;
+      document.getElementById('albumCat').textContent = album.cat;
+      
+      const grid = document.getElementById('albumGrid');
+      grid.innerHTML = '';
+      album.images.forEach((imgSrc, imgIdx) => {
+        grid.innerHTML += `
+          <div class="album-item" onclick="openLightbox(${imgIdx})">
+            <img src="${imgSrc}" alt="${album.title} image" />
+            <div class="album-overlay">
+              <div class="album-expand">+</div>
+            </div>
+          </div>
+        `;
+      });
+      navigateTo('album');
+    }
+
+    function openLightbox(imgIdx) {
+      if (currentAlbumIndex === -1) return;
+      lbCurrent = imgIdx;
+      const album = portfolioItems[currentAlbumIndex];
+      lbImg.src = album.images[imgIdx];
       lightbox.classList.add('open');
       document.body.style.overflow = 'hidden';
     }
@@ -2898,18 +3150,22 @@
       document.body.style.overflow = '';
     }
     function lbPrev() {
-      lbCurrent = (lbCurrent - 1 + portfolioItems.length) % portfolioItems.length;
+      if (currentAlbumIndex === -1) return;
+      const album = portfolioItems[currentAlbumIndex];
+      lbCurrent = (lbCurrent - 1 + album.images.length) % album.images.length;
       lbImg.style.animation = 'none';
       void lbImg.offsetWidth;
       lbImg.style.animation = '';
-      lbImg.src = portfolioItems[lbCurrent].src;
+      lbImg.src = album.images[lbCurrent];
     }
     function lbNext() {
-      lbCurrent = (lbCurrent + 1) % portfolioItems.length;
+      if (currentAlbumIndex === -1) return;
+      const album = portfolioItems[currentAlbumIndex];
+      lbCurrent = (lbCurrent + 1) % album.images.length;
       lbImg.style.animation = 'none';
       void lbImg.offsetWidth;
       lbImg.style.animation = '';
-      lbImg.src = portfolioItems[lbCurrent].src;
+      lbImg.src = album.images[lbCurrent];
     }
     lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
     document.addEventListener('keydown', e => {
